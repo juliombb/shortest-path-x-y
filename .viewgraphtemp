@@ -1,0 +1,21 @@
+digraph g {
+	node [
+shape = "circle",
+style = "bold",
+color = "black",
+fontsize = 20,
+];
+	"0" [style = "bold", color="RED"pos = "0,0!" ];
+	"1" [style = "bold", color="BLACK"pos = "4,0!" ];
+	"2" [style = "bold", color="BLACK"pos = "16,0!" ];
+	"3" [style = "bold", color="BLACK"pos = "8,0!" ];
+	"4" [style = "bold", color="BLACK"pos = "12,0!" ];
+	"5" [style = "bold", color="RED"pos = "20,0!" ];
+	"0" -> "1" [color="BLACK" penwidth="1.5"];
+	"1" -> "2" [color="BLACK" penwidth="1.5"];
+	"2" -> "3" [color="BLACK" penwidth="1.5"];
+	"3" -> "4" [color="BLACK" penwidth="1.5"];
+	"4" -> "5" [color="BLACK" penwidth="1.5"];
+label="solution: arq4.in";
+fontsize=20;
+}

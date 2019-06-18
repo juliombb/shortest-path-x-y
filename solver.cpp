@@ -15,7 +15,9 @@ void initMatrix(int n) {
 
     for (int i = 0; i < n; ++i) {
         matrix[i] = (vector<int>*) malloc(n*sizeof(vector<int>));
-        matrix[i][0][0] = -1;
+        for (int j = 0; j < n; ++j) {
+            matrix[i][j][0] = -1;
+        }
     }
     initiated = true;
 }
@@ -119,6 +121,7 @@ vector<int> solveTopDown(Instance &instance, int timelimit, chrono::high_resolut
             current_sol_permutations = matrix[i][current_instance.n - 1];
         } else {
             current_sol_permutations = solveTopDown(current_instance, timelimit, started);
+            matrix[i][current_instance.n - 1] = current_sol_permutations;
         }
 
         vector<Point> current_sol = permutate(instance, current_sol_permutations);
