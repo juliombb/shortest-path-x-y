@@ -1,0 +1,40 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+C:/lab_mc458/instance.h
+vector
+-
+string
+-
+point.h
+C:/lab_mc458/point.h
+
+C:/lab_mc458/point.h
+
+C:/lab_mc458/solver.cpp
+solver.h
+C:/lab_mc458/solver.h
+
+C:/lab_mc458/solver.h
+vector
+-
+map
+-
+cmath
+-
+point.h
+C:/lab_mc458/point.h
+instance.h
+C:/lab_mc458/instance.h
+bits/stdc++.h
+-
+algorithm
+-
+chrono
+-
+

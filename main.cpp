@@ -1,6 +1,7 @@
 #include "main.h"
 
 int main(int argc, char *argv[]){
+    setbuf(stdout, 0);
     // read parameters from command line
     Params params;
     readParams(params, argc, argv);
@@ -69,9 +70,6 @@ void readParams(Params &params, int argc, char *argv[])
             i++;
             continue;
         }
-
-        cerr << "Invalid parameter." << endl;
-        exit(1);
     }
 
     // Check
@@ -218,5 +216,5 @@ void printSolution(Instance &instance, vector<int> &solution){
         }
     }
 
-    cout << dist << endl;
+    printf("%.5f", dist);
 }
