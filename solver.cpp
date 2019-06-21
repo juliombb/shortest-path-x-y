@@ -111,7 +111,7 @@ vector<int> solveTopDown(Instance &instance, int timelimit, chrono::high_resolut
 
     for (
         int permutation_with_prev_last = 1;
-        permutation_with_prev_last < instance.n - 2;
+        permutation_with_prev_last < instance.n - 1;
         ++permutation_with_prev_last
     ) {
         // calculamos todas as iteracoes possiveis de n-1
