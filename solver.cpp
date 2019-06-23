@@ -129,14 +129,15 @@ vector<int>* solveTopDownWithMask(
 //        return vector<int>(0);
 //    }
 
-//    if (matrix[current_pt][mask] != nullptr) {
-//        return matrix[current_pt][mask];
-//    }
+    if (matrix[current_pt][mask] != nullptr) {
+        return matrix[current_pt][mask];
+    }
 
-    if (allVisited(mask, instance.n - 2)) {
+    if (allVisited(mask, instance.n - 1)) {
         vector<int>* res = (vector<int>*) malloc(sizeof(vector<int>));
         res->push_back(instance.n - 1);
         res->push_back(current_pt);
+        matrix[current_pt][mask] = res;
         return res;
     }
 
@@ -149,17 +150,20 @@ vector<int>* solveTopDownWithMask(
         }
 
         unsigned long long newMask = visit(mask, point);
-        vector<int>* current_sol = solveTopDownWithMask(instance, newMask, point, timelimit, started);
+        vector<int>* current_sol = (vector<int>*) malloc(sizeof(vector<int>));
+        (*current_sol) = *solveTopDownWithMask(instance, newMask, point, timelimit, started);
         current_sol->push_back(current_pt);
         double current_sol_cost = getFullCost((*current_sol), instance);
 
         if (best_sol_cost == -1 || best_sol_cost > current_sol_cost) {
             best_sol_cost = current_sol_cost;
             best_sol = current_sol;
+        } else {
+            delete current_sol;
         }
     }
 
-//    matrix[current_pt][mask] = best_sol;
+    matrix[current_pt][mask] = best_sol;
     return best_sol;
 }
 
@@ -167,7 +171,7 @@ vector<int> solveTopDown(Instance &instance, int timelimit, chrono::high_resolut
     unsigned long long mask = 1;
     // mask = mascara com n bits. se o bit i está ocupado o ponto i ja foi visitado na recursão em questão
 
-    //initMatrix(instance.n - 1);
+    initMatrix(instance.n - 1);
     vector<int> res = *solveTopDownWithMask(instance, mask, 0, timelimit, started);
 
     std::reverse(res.begin(), res.end()); // nossa funcao retorna com n na primeira posicao
