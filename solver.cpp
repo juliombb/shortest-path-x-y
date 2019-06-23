@@ -137,10 +137,10 @@ vector<int> solveTopDown(Instance &instance, int timelimit, chrono::high_resolut
         // calculamos todas as iteracoes possiveis de n-1
         // sendo sempre o primeiro igual e o ultimo diferente
 
-        vector<Point> newPoints = copyVec(instance.points);
-        newPoints.pop_back();
+        vector<Point> new_points = copyVec(instance.points);
+        new_points.pop_back();
         Instance current_instance;
-        current_instance.points = newPoints;
+        current_instance.points = new_points;
         current_instance.instanceName = instance.instanceName;
         current_instance.n = instance.n - 1;
 
