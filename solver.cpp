@@ -96,7 +96,7 @@ vector<int> solveBottomUp(Instance &instance, int timelimit, chrono::high_resolu
 	return sol;
 }
 
-vector<int> solveTopDown(Instance &instance, int timelimit, chrono::high_resolution_clock::time_point &started) {
+vector<int> solveTopDownWithOriginal(Instance &original_instance, Instance &this_instance, int timelimit, chrono::high_resolution_clock::time_point &started) {
     // get the time that has passed in seconds and check the timelimit
     auto done = chrono::high_resolution_clock::now();
     auto time = chrono::duration_cast<chrono::seconds>(done - started).count();
@@ -105,54 +105,54 @@ vector<int> solveTopDown(Instance &instance, int timelimit, chrono::high_resolut
 //        return vector<int>(0);
 //    }
 
-    if (instance.n <= 2) {
+    if (this_instance.n <= 2) {
         vector<int> v(2, 1);
         v[0] = 0;
         return v;
-    } else if (instance.n <= 3) {
+    } else if (this_instance.n <= 3) {
         vector<int> v(3, 2);
         v[0] = 0;
         v[1] = 1;
         return v;
     }
 
-//    initMatrix(instance.n);
-//
-//    int last_point_index = findPointIn(instance.points[instance.n - 1], original_instance);
-//    if (last_point_index < 0) {
-//        return vector<int>(0);
-//    }
-//    if (matrix[last_point_index][instance.n - 1][0] != -1) {
-//        return matrix[last_point_index][instance.n - 1];
-//    }
+    initMatrix(this_instance.n);
+
+    int last_point_index = findPointIn(this_instance.points[this_instance.n - 1], original_instance);
+    if (last_point_index < 0) {
+        return vector<int>(0);
+    }
+    if (matrix[last_point_index][this_instance.n - 1][0] != -1) {
+        return matrix[last_point_index][this_instance.n - 1];
+    }
 
     vector<int> best_sol;
     double best_sol_cost = -1;
 
     for (
             int permutation_with_prev_last = 1;
-            permutation_with_prev_last < instance.n - 1;
+            permutation_with_prev_last < this_instance.n - 1;
             ++permutation_with_prev_last
             ) {
         // calculamos todas as iteracoes possiveis de n-1
         // sendo sempre o primeiro igual e o ultimo diferente
 
-        vector<Point> newPoints = copyVec(instance.points);
+        vector<Point> newPoints = copyVec(this_instance.points);
         newPoints.pop_back();
         Instance current_instance;
         current_instance.points = newPoints;
-        current_instance.instanceName = instance.instanceName;
-        current_instance.n = instance.n - 1;
+        current_instance.instanceName = this_instance.instanceName;
+        current_instance.n = this_instance.n - 1;
 
-        Point prev_last = instance.points[instance.n - 2];
-        Point current_last = instance.points[permutation_with_prev_last];
+        Point prev_last = this_instance.points[this_instance.n - 2];
+        Point current_last = this_instance.points[permutation_with_prev_last];
 
         current_instance.points[permutation_with_prev_last] = prev_last;
         current_instance.points[current_instance.n - 1] = current_last;
 
         vector<int> current_sol_permutations;
 
-        current_sol_permutations = solveTopDown(current_instance, timelimit, started);
+        current_sol_permutations = solveTopDownWithOriginal(original_instance, current_instance, timelimit, started);
 
         if (current_sol_permutations.empty()) {
             return vector<int>(0);
@@ -163,15 +163,20 @@ vector<int> solveTopDown(Instance &instance, int timelimit, chrono::high_resolut
         vector<int> current_sol_final;
         current_sol_final = exchangePositions(current_sol_permutations, permutation_with_prev_last, current_instance.n - 1);
         if (best_sol_cost == -1
-            || (current_sol_cost + getDistance(current_last, instance.points[instance.n - 1]) < best_sol_cost)) {
-            best_sol_cost = current_sol_cost + getDistance(current_last, instance.points[instance.n - 1]);
+            || (current_sol_cost + getDistance(current_last, this_instance.points[this_instance.n - 1]) < best_sol_cost)) {
+            best_sol_cost = current_sol_cost + getDistance(current_last, this_instance.points[this_instance.n - 1]);
             best_sol = exchangePositions(current_sol_permutations, permutation_with_prev_last, current_instance.n - 1);
             best_sol.push_back(current_instance.n);
         }
     }
 
-    // matrix[last_point_index][instance.n - 1] = best_sol;
+    matrix[last_point_index][this_instance.n - 1] = best_sol;
     return best_sol;
+}
+
+vector<int> solveTopDown(Instance &instance, int timelimit, chrono::high_resolution_clock::time_point &started){
+    // get the time that has passed in seconds and check the timelimit
+    return solveTopDownWithOriginal(instance, instance ,timelimit, started);
 }
 
 vector<int> exchangePositions(vector<int> originalVec, int valueToExchange, int otherValue) {
