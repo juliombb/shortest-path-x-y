@@ -6,24 +6,23 @@ vector<int> exchangePositions(vector<int> originalVec, int valueToExchange, int 
 
 int findPointIn(Point &point, Instance &instance);
 
-short initiated = false;
-vector<int>** matrix;
-// bi dimensional -> x = final, y = quantidade de pontos -1
+bool visited(int point, unsigned long long int mask);
+
+unsigned long long int visit(unsigned long long int mask, int point);
+
+vector<int>*** matrix;
+// bi dimensional -> x = ponto atual, y = mascara
 
 void initMatrix(int n) {
-    if (initiated) {
-        return;
-    }
-
-    matrix = (vector<int>**) malloc(n*sizeof(vector<int>*));
+    matrix = (vector<int>***) malloc(n*sizeof(vector<int>**));
 
     for (int i = 0; i < n; ++i) {
-        matrix[i] = (vector<int>*) malloc(n*sizeof(vector<int>));
-        for (int j = 0; j < n; ++j) {
-            matrix[i][j].push_back(-1);
+        unsigned long long possible_masks = (1<<n);
+        matrix[i] = (vector<int>**) malloc(possible_masks*sizeof(vector<int>*));
+        for (int j = 0; j < possible_masks; ++j) {
+            matrix[i][j] = nullptr;
         }
     }
-    initiated = true;
 }
 
 double getDistance(Point p1, Point p2){
@@ -37,6 +36,15 @@ double getFullCost(vector<Point> points) {
     double sum = 0;
     for (int i = 1; i < points.size(); ++i) {
         sum += getDistance(points[i], points[i-1]);
+    }
+
+    return sum;
+}
+
+double getFullCost(vector<int> points, Instance &instance) {
+    double sum = 0;
+    for (int i = 1; i < points.size(); ++i) {
+        sum += getDistance(instance.points[points[i]], instance.points[points[i-1]]);
     }
 
     return sum;
@@ -96,87 +104,75 @@ vector<int> solveBottomUp(Instance &instance, int timelimit, chrono::high_resolu
 	return sol;
 }
 
-vector<int> solveTopDownWithOriginal(Instance &original_instance, Instance &this_instance, int timelimit, chrono::high_resolution_clock::time_point &started) {
+bool allVisited(unsigned long long mask, int n) {
+    return mask == ((1<<n) - 1);
+}
+
+bool visited(int point, unsigned long long mask) {
+    return (mask & (1 << point)) > 0;
+}
+
+unsigned long long visit(unsigned long long mask, int point) {
+    return mask | (1 << point);
+}
+
+
+vector<int>* solveTopDownWithMask(
+        Instance &instance, unsigned long long mask, int current_pt,
+        int timelimit, chrono::high_resolution_clock::time_point &started
+        ) {
     // get the time that has passed in seconds and check the timelimit
-    auto done = chrono::high_resolution_clock::now();
-    auto time = chrono::duration_cast<chrono::seconds>(done - started).count();
+//    auto done = chrono::high_resolution_clock::now();
+//    auto time = chrono::duration_cast<chrono::seconds>(done - started).count();
 
 //    if (time > timelimit) {
 //        return vector<int>(0);
 //    }
 
-    if (this_instance.n <= 2) {
-        vector<int> v(2, 1);
-        v[0] = 0;
-        return v;
-    } else if (this_instance.n <= 3) {
-        vector<int> v(3, 2);
-        v[0] = 0;
-        v[1] = 1;
-        return v;
+//    if (matrix[current_pt][mask] != nullptr) {
+//        return matrix[current_pt][mask];
+//    }
+
+    if (allVisited(mask, instance.n - 2)) {
+        vector<int>* res = (vector<int>*) malloc(sizeof(vector<int>));
+        res->push_back(instance.n - 1);
+        res->push_back(current_pt);
+        return res;
     }
 
-    initMatrix(this_instance.n);
-
-    int last_point_index = findPointIn(this_instance.points[this_instance.n - 1], original_instance);
-    if (last_point_index < 0) {
-        return vector<int>(0);
-    }
-    if (matrix[last_point_index][this_instance.n - 1][0] != -1) {
-        return matrix[last_point_index][this_instance.n - 1];
-    }
-
-    vector<int> best_sol;
+    vector<int>* best_sol = (vector<int>*) malloc(sizeof(vector<int>));
     double best_sol_cost = -1;
 
-    for (
-            int permutation_with_prev_last = 1;
-            permutation_with_prev_last < this_instance.n - 1;
-            ++permutation_with_prev_last
-            ) {
-        // calculamos todas as iteracoes possiveis de n-1
-        // sendo sempre o primeiro igual e o ultimo diferente
-
-        vector<Point> newPoints = copyVec(this_instance.points);
-        newPoints.pop_back();
-        Instance current_instance;
-        current_instance.points = newPoints;
-        current_instance.instanceName = this_instance.instanceName;
-        current_instance.n = this_instance.n - 1;
-
-        Point prev_last = this_instance.points[this_instance.n - 2];
-        Point current_last = this_instance.points[permutation_with_prev_last];
-
-        current_instance.points[permutation_with_prev_last] = prev_last;
-        current_instance.points[current_instance.n - 1] = current_last;
-
-        vector<int> current_sol_permutations;
-
-        current_sol_permutations = solveTopDownWithOriginal(original_instance, current_instance, timelimit, started);
-
-        if (current_sol_permutations.empty()) {
-            return vector<int>(0);
+    for (int point = 1; point < instance.n - 1; ++point) {
+        if (visited(point, mask)) {
+            continue;
         }
 
-        vector<Point> current_sol = permutate(current_instance, current_sol_permutations);
-        double current_sol_cost = getFullCost(current_sol);
-        vector<int> current_sol_final;
-        current_sol_final = exchangePositions(current_sol_permutations, permutation_with_prev_last, current_instance.n - 1);
-        if (best_sol_cost == -1
-            || (current_sol_cost + getDistance(current_last, this_instance.points[this_instance.n - 1]) < best_sol_cost)) {
-            best_sol_cost = current_sol_cost + getDistance(current_last, this_instance.points[this_instance.n - 1]);
-            best_sol = exchangePositions(current_sol_permutations, permutation_with_prev_last, current_instance.n - 1);
-            best_sol.push_back(current_instance.n);
+        unsigned long long newMask = visit(mask, point);
+        vector<int>* current_sol = solveTopDownWithMask(instance, newMask, point, timelimit, started);
+        current_sol->push_back(current_pt);
+        double current_sol_cost = getFullCost((*current_sol), instance);
+
+        if (best_sol_cost == -1 || best_sol_cost > current_sol_cost) {
+            best_sol_cost = current_sol_cost;
+            best_sol = current_sol;
         }
     }
 
-    matrix[last_point_index][this_instance.n - 1] = best_sol;
+//    matrix[current_pt][mask] = best_sol;
     return best_sol;
 }
 
 vector<int> solveTopDown(Instance &instance, int timelimit, chrono::high_resolution_clock::time_point &started){
-    // get the time that has passed in seconds and check the timelimit
-    return solveTopDownWithOriginal(instance, instance ,timelimit, started);
+    unsigned long long mask = 1;
+    // mask = mascara com n bits. se o bit i está ocupado o ponto i ja foi visitado na recursão em questão
+
+    //initMatrix(instance.n - 1);
+    vector<int> res = *solveTopDownWithMask(instance, mask, 0, timelimit, started);
+
+    std::reverse(res.begin(), res.end()); // nossa funcao retorna com n na primeira posicao
+
+    return res;
 }
 
 vector<int> exchangePositions(vector<int> originalVec, int valueToExchange, int otherValue) {
