@@ -29,7 +29,7 @@ double getDistance(Point p1, Point p2){
 	double delta_x = p1.x - p2.x;
 	double delta_y = p1.y - p2.y;
 
-	return sqrt(delta_x * delta_x + delta_y * delta_y); 
+	return sqrt(delta_x * delta_x + delta_y * delta_y);
 }
 
 double getFullCost(vector<int> points, Instance &instance) {
@@ -77,24 +77,6 @@ vector<Point> permutate(Instance &instance, vector<int> permutations) {
     return points;
 }
 
-vector<int> solveBottomUp(Instance &instance, int timelimit, chrono::high_resolution_clock::time_point &started){
-	vector<int> sol;
-	
-	for (int i = 1; i < instance.n - 1; i++){
-		sol.push_back(i);
-		
-		// get the time that has passed in seconds and check the timelimit
-		auto done = chrono::high_resolution_clock::now();
-		auto time = chrono::duration_cast<chrono::seconds>(done-started).count();
-		
-		if (time > timelimit){
-			break;
-		}
-	}
-	
-	return sol;
-}
-
 bool allVisited(unsigned long long mask, int n) {
     return mask == ((1<<n) - 1);
 }
@@ -107,18 +89,74 @@ unsigned long long visit(unsigned long long mask, int point) {
     return mask | (1 << point);
 }
 
+vector<int> solveBottomUp(Instance &instance, int timelimit, chrono::high_resolution_clock::time_point &started) {
+
+  initMatrix(instance.n - 1);
+
+  for (unsigned long long mask = 1<<(instance.n) - 1; mask > 0; mask--) {
+      // mask = mascara com n bits. se o bit i está ocupado o ponto i ja foi visitado na recursão em questão
+      for (int current_pt = 0; current_pt < instance.n - 1; current_pt++) {
+
+      	vector<int> res;
+
+        if (allVisited(mask, instance.n - 1)) {
+            vector<int> res;
+            res.push_back(instance.n - 1);
+            res.push_back(current_pt);
+            matrix[current_pt][mask] = res;
+            continue;
+        }
+
+        vector<int> best_sol;
+        double best_sol_cost = -1;
+
+        for (int point = 1; point < instance.n - 1; ++point) {
+            if (visited(point, mask)) {
+                continue;
+            }
+
+            unsigned long long newMask = visit(mask, point);
+            vector<int> current_sol = matrix[point][newMask];
+            current_sol.push_back(current_pt);
+            double current_sol_cost = getFullCost(current_sol, instance);
+
+            if (best_sol_cost == -1 || best_sol_cost > current_sol_cost) {
+                best_sol_cost = current_sol_cost;
+                best_sol = current_sol;
+            }
+        }
+
+        matrix[current_pt][mask] = best_sol;
+    	}
+  }
+
+  vector<int> res = matrix[0][1];
+  double res_cost = getFullCost(res, instance);
+  for (size_t i = 1; i < instance.n; i++) {
+    vector<int> current_res = matrix[i][1];
+    double current_res_cost = getFullCost(current_res, instance);
+    if (current_res_cost < res_cost) {
+      res_cost = current_res_cost;
+      res = current_res;
+    }
+  }
+
+  std::reverse(res.begin(), res.end()); // nossa funcao retorna com n na primeira posicao
+
+  return res;
+}
 
 vector<int> solveTopDownWithMask(
         Instance &instance, unsigned long long mask, int current_pt,
         int timelimit, chrono::high_resolution_clock::time_point &started
         ) {
     // get the time that has passed in seconds and check the timelimit
-//    auto done = chrono::high_resolution_clock::now();
-//    auto time = chrono::duration_cast<chrono::seconds>(done - started).count();
+   auto done = chrono::high_resolution_clock::now();
+   auto time = chrono::duration_cast<chrono::seconds>(done - started).count();
 
-//    if (time > timelimit) {
-//        return vector<int>(0);
-//    }
+   if (time > timelimit) {
+       return vector<int>(0);
+   }
 
     if (!matrix[current_pt][mask].empty()) {
         return matrix[current_pt][mask];

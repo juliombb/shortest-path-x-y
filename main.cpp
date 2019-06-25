@@ -14,10 +14,10 @@ int main(int argc, char *argv[]){
     auto started = chrono::high_resolution_clock::now();
     vector<int> solution;
 
-    if(params.algorithm.compare("A") == 0){
+    if (params.algorithm.compare("A") == 0){
         solution = solveBottomUp(instance, params.timelimit, started);
     }
-    else if(params.algorithm.compare("B") == 0){
+    else if (params.algorithm.compare("B") == 0){
         solution = solveTopDown(instance, params.timelimit, started);
     }
 
