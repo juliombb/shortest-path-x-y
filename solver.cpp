@@ -1,11 +1,5 @@
 #include "solver.h"
 
-vector<Point> permutate(Instance &instance, vector<int> permutations);
-
-vector<int> exchangePositions(vector<int> originalVec, int valueToExchange, int otherValue);
-
-int findPointIn(Point &point, Instance &instance);
-
 bool visited(int point, unsigned long long int mask);
 
 unsigned long long int visit(unsigned long long int mask, int point);
@@ -41,42 +35,6 @@ double getFullCost(vector<int> points, Instance &instance) {
     return sum;
 }
 
-vector<int> copyVec(const vector<int> &other) {
-    vector<int> newOne;
-    for (int i : other) {
-        newOne.push_back(i);
-    }
-
-    return newOne;
-}
-
-vector<Point> copyVec(const vector<Point> &other) {
-    vector<Point> newOne;
-    for (Point i : other) {
-        newOne.push_back(i);
-    }
-
-    return newOne;
-}
-
-int findPointIn(Point &point, Instance &instance) {
-    for (int i = 0; i < instance.n; ++i) {
-        if (instance.points[i].x == point.x && instance.points[i].y == point.y) {
-            return i;
-        }
-    }
-
-    return -1; // should never happen
-}
-
-vector<Point> permutate(Instance &instance, vector<int> permutations) {
-    vector<Point> points = copyVec(instance.points);
-    for (int i = 0; i < permutations.size(); ++i) {
-        points[i] = instance.points[permutations[i]];
-    }
-    return points;
-}
-
 bool allVisited(unsigned long long mask, int n) {
     return mask == ((1 << n) - 1);
 }
@@ -99,6 +57,13 @@ vector<int> solveBottomUp(Instance &instance, int timelimit, chrono::high_resolu
 
             if (!visited(current_pt, mask)) {
                 continue;
+            }
+
+            auto done = chrono::high_resolution_clock::now();
+            auto time = chrono::duration_cast<chrono::seconds>(done - started).count();
+
+            if (time > timelimit) {
+                return vector<int>(0);
             }
 
             if (allVisited(mask, instance.n - 1)) {
@@ -134,7 +99,8 @@ vector<int> solveBottomUp(Instance &instance, int timelimit, chrono::high_resolu
 
     vector<int> res = matrix[0][1];
 
-    std::reverse(res.begin(), res.end()); // nossa funcao retorna com n na primeira posicao
+    std::reverse(res.begin(), res.end());
+        // nossa funcao retorna com n na primeira posicao
 
     return res;
 }
@@ -173,6 +139,11 @@ vector<int> solveTopDownWithMask(
 
         unsigned long long newMask = visit(mask, point);
         vector<int> current_sol = solveTopDownWithMask(instance, newMask, point, timelimit, started);
+
+        if (current_sol.empty()) {
+            return vector<int>(0);
+        }
+
         current_sol.push_back(current_pt);
         double current_sol_cost = getFullCost(current_sol, instance);
 
@@ -196,19 +167,4 @@ vector<int> solveTopDown(Instance &instance, int timelimit, chrono::high_resolut
     std::reverse(res.begin(), res.end()); // nossa funcao retorna com n na primeira posicao
 
     return res;
-}
-
-vector<int> exchangePositions(vector<int> originalVec, int valueToExchange, int otherValue) {
-    vector<int> ret;
-    for (int i = 0; i < originalVec.size(); ++i) {
-        if (originalVec[i] == valueToExchange) {
-            ret.push_back(otherValue);
-        } else if (originalVec[i] == otherValue) {
-            ret.push_back(valueToExchange);
-        } else {
-            ret.push_back(originalVec[i]);
-        }
-    }
-
-    return ret;
 }
