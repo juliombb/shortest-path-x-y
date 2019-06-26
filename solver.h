@@ -9,8 +9,6 @@
 #include <algorithm>
 #include <chrono>
 
-#define M 32
-
 using namespace std;
 
 double getDistance(Point p1, Point p2);

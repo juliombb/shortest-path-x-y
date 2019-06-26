@@ -1,0 +1,68 @@
+==847== Memcheck, a memory error detector
+==847== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==847== Using Valgrind-3.13.0 and LibVEX; rerun with -h for copyright info
+==847== Command: ./solver -i arq7.in
+==847== Parent PID: 253
+==847== 
+==847== error calling PR_SET_PTRACER, vgdb might block
+==847== Conditional jump or move depends on uninitialised value(s)
+==847==    at 0x4E0BB7: malloc_hook_ini (in /mnt/c/lab_mc458/solver)
+==847==    by 0x56221A: _dl_get_origin (in /mnt/c/lab_mc458/solver)
+==847==    by 0x52CEAE: _dl_non_dynamic_init (in /mnt/c/lab_mc458/solver)
+==847==    by 0x52E640: __libc_init_first (in /mnt/c/lab_mc458/solver)
+==847==    by 0x4B0C20: (below main) (in /mnt/c/lab_mc458/solver)
+==847== 
+==847== Conditional jump or move depends on uninitialised value(s)
+==847==    at 0x4E0CA9: malloc_hook_ini (in /mnt/c/lab_mc458/solver)
+==847==    by 0x56221A: _dl_get_origin (in /mnt/c/lab_mc458/solver)
+==847==    by 0x52CEAE: _dl_non_dynamic_init (in /mnt/c/lab_mc458/solver)
+==847==    by 0x52E640: __libc_init_first (in /mnt/c/lab_mc458/solver)
+==847==    by 0x4B0C20: (below main) (in /mnt/c/lab_mc458/solver)
+==847== 
+==847== Conditional jump or move depends on uninitialised value(s)
+==847==    at 0x4DE653: _int_malloc (in /mnt/c/lab_mc458/solver)
+==847==    by 0x4E05D4: tcache_init.part.4 (in /mnt/c/lab_mc458/solver)
+==847==    by 0x4E0CB8: malloc_hook_ini (in /mnt/c/lab_mc458/solver)
+==847==    by 0x56221A: _dl_get_origin (in /mnt/c/lab_mc458/solver)
+==847==    by 0x52CEAE: _dl_non_dynamic_init (in /mnt/c/lab_mc458/solver)
+==847==    by 0x52E640: __libc_init_first (in /mnt/c/lab_mc458/solver)
+==847==    by 0x4B0C20: (below main) (in /mnt/c/lab_mc458/solver)
+==847== 
+==847== Conditional jump or move depends on uninitialised value(s)
+==847==    at 0x5187E4: __strcspn_sse42 (in /mnt/c/lab_mc458/solver)
+==847==    by 0x565FF8: strsep (in /mnt/c/lab_mc458/solver)
+==847==    by 0x55AA2E: fillin_rpath (in /mnt/c/lab_mc458/solver)
+==847==    by 0x55B23B: _dl_init_paths (in /mnt/c/lab_mc458/solver)
+==847==    by 0x52D378: _dl_non_dynamic_init (in /mnt/c/lab_mc458/solver)
+==847==    by 0x52E640: __libc_init_first (in /mnt/c/lab_mc458/solver)
+==847==    by 0x4B0C20: (below main) (in /mnt/c/lab_mc458/solver)
+==847== 
+==847== Conditional jump or move depends on uninitialised value(s)
+==847==    at 0x5187C2: __strcspn_sse42 (in /mnt/c/lab_mc458/solver)
+==847==    by 0x565FF8: strsep (in /mnt/c/lab_mc458/solver)
+==847==    by 0x55AA2E: fillin_rpath (in /mnt/c/lab_mc458/solver)
+==847==    by 0x55B23B: _dl_init_paths (in /mnt/c/lab_mc458/solver)
+==847==    by 0x52D378: _dl_non_dynamic_init (in /mnt/c/lab_mc458/solver)
+==847==    by 0x52E640: __libc_init_first (in /mnt/c/lab_mc458/solver)
+==847==    by 0x4B0C20: (below main) (in /mnt/c/lab_mc458/solver)
+==847== 
+==847== Conditional jump or move depends on uninitialised value(s)
+==847==    at 0x52BF5C: __libc_alloca_cutoff (in /mnt/c/lab_mc458/solver)
+==847==    by 0x541CB7: __printf_fp_l (in /mnt/c/lab_mc458/solver)
+==847==    by 0x53ED5F: vfprintf (in /mnt/c/lab_mc458/solver)
+==847==    by 0x540B9F: buffered_vfprintf (in /mnt/c/lab_mc458/solver)
+==847==    by 0x53DBDD: vfprintf (in /mnt/c/lab_mc458/solver)
+==847==    by 0x4CE032: printf (in /mnt/c/lab_mc458/solver)
+==847==    by 0x402815: printSolution(Instance&, std::vector<int, std::allocator<int> >&) (main.cpp:219)
+==847==    by 0x40119A: main (main.cpp:29)
+==847== 
+==847== 
+==847== HEAP SUMMARY:
+==847==     in use at exit: 0 bytes in 0 blocks
+==847==   total heap usage: 0 allocs, 0 frees, 0 bytes allocated
+==847== 
+==847== All heap blocks were freed -- no leaks are possible
+==847== 
+==847== For counts of detected and suppressed errors, rerun with: -v
+==847== Use --track-origins=yes to see where uninitialised values come from
+==847== ERROR SUMMARY: 6 errors from 6 contexts (suppressed: 0 from 0)

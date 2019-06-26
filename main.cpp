@@ -14,17 +14,20 @@ int main(int argc, char *argv[]){
     auto started = chrono::high_resolution_clock::now();
     vector<int> solution;
 
-    if(params.algorithm.compare("A") == 0){
+    if (params.algorithm.compare("A") == 0){
         solution = solveBottomUp(instance, params.timelimit, started);
     }
-    else if(params.algorithm.compare("B") == 0){
+    else if (params.algorithm.compare("B") == 0){
         solution = solveTopDown(instance, params.timelimit, started);
     }
 
     // output data
     auto done = chrono::high_resolution_clock::now();
     auto time = chrono::duration_cast<chrono::milliseconds>(done-started).count();
-    //cout << "time to solve: " << time << " ms" << endl;
+    cout << "time to solve: " << time << " ms" << endl;
+
+    cout << "timelimit: " << params.timelimit << endl;
+    cout << "instance name: " << instance.instanceName << endl;
 
     printSolution(instance, solution);
 
@@ -216,5 +219,5 @@ void printSolution(Instance &instance, vector<int> &solution){
         }
     }
 
-    printf("%.5f", dist);
+    cout << dist << endl;
 }
