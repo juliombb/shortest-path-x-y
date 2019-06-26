@@ -24,7 +24,10 @@ int main(int argc, char *argv[]){
     // output data
     auto done = chrono::high_resolution_clock::now();
     auto time = chrono::duration_cast<chrono::milliseconds>(done-started).count();
-    //cout << "time to solve: " << time << " ms" << endl;
+    cout << "time to solve: " << time << " ms" << endl;
+
+    cout << "timelimit: " << params.timelimit << endl;
+    cout << "instance name: " << instance.instanceName << endl;
 
     printSolution(instance, solution);
 
@@ -216,5 +219,5 @@ void printSolution(Instance &instance, vector<int> &solution){
         }
     }
 
-    printf("%.5f", dist);
+    cout << dist << endl;
 }
